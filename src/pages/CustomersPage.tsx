@@ -13,7 +13,6 @@ const CustomersPage: React.FC = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
-  const [nextId, setNextId] = useState(3)
 
   const handleAddCustomer = () => {
     setSelectedCustomer(null)
@@ -42,9 +41,8 @@ const CustomersPage: React.FC = () => {
       console.log("Customer updated:", { ...customerData, id: selectedCustomer.id })
     } else {
       // Add new customer
-      const newCustomer = { ...customerData, id: nextId }
+      const newCustomer = { ...customerData, id: Date.now() }
       setCustomers((prev) => [...prev, newCustomer])
-      setNextId((prev) => prev + 1)
       setIsAddDialogOpen(false)
       console.log("Customer added:", newCustomer)
     }

@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from "react"
-import type { Customer } from "../../types/Customer"
+import type { Customer, CustomerFormData } from "../../types/Customer"
 
 interface CustomerFormProps {
   customer?: Customer | null
   onSubmit: (customerData: Omit<Customer, "id">) => void
-}
-
-interface FormData {
-  name: string
-  email: string
-  phone: string
-  address: string
 }
 
 interface FormErrors {
@@ -21,7 +14,7 @@ interface FormErrors {
 }
 
 const CustomerForm = ({ customer, onSubmit }: CustomerFormProps) => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<CustomerFormData>({
     name: "",
     email: "",
     phone: "",

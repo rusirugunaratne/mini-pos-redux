@@ -22,7 +22,6 @@ const OrdersPage: React.FC = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
-  const [nextId, setNextId] = useState(3)
 
   const handleAddOrder = () => {
     setSelectedOrder(null)
@@ -58,11 +57,10 @@ const OrdersPage: React.FC = () => {
       // Add new order
       const newOrder: Order = {
         ...orderData,
-        id: nextId,
+        id: Date.now(),
         date: new Date().toISOString(),
       }
       setOrders((prev) => [...prev, newOrder])
-      setNextId((prev) => prev + 1)
       setIsAddDialogOpen(false)
       console.log("Order added:", newOrder)
     }
