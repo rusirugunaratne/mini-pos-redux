@@ -6,7 +6,7 @@ interface ItemFormProps {
   onSubmit: (itemData: Omit<Item, "id">) => void
 }
 
-interface FormData {
+interface ItemFormData {
   name: string
   price: string
 }
@@ -17,7 +17,7 @@ interface FormErrors {
 }
 
 const ItemForm: React.FC<ItemFormProps> = ({ item, onSubmit }) => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ItemFormData>({
     name: "",
     price: "",
   })

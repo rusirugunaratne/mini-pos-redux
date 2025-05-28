@@ -13,7 +13,6 @@ const ItemsPage: React.FC = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
-  const [nextId, setNextId] = useState(5)
 
   const handleAddItem = () => {
     setSelectedItem(null)
@@ -40,9 +39,8 @@ const ItemsPage: React.FC = () => {
       console.log("Item updated:", { ...itemData, id: selectedItem.id })
     } else {
       // Add new item
-      const newItem = { ...itemData, id: nextId }
+      const newItem = { ...itemData, id: Date.now() }
       setItems((prev) => [...prev, newItem])
-      setNextId((prev) => prev + 1)
       setIsAddDialogOpen(false)
       console.log("Item added:", newItem)
     }

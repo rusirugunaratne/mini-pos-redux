@@ -1,19 +1,45 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { MdAdd } from "react-icons/md"
 import Dialog from "../components/Dialog"
 import type { Customer } from "../types/Customer"
 import CustomersTable from "../components/tables/CustomersTable"
 import CustomerForm from "../components/forms/CustomerForm"
-import { customersData } from "../data/data"
+import axios from "axios"
+import toast from "react-hot-toast"
+import { addCustomer, deleteCustomer, getAllCustomers, updateCustomer } from "../services/customerService"
 
 const CustomersPage: React.FC = () => {
-  const [customers, setCustomers] = useState<Customer[]>(customersData)
-
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [isCustomersLoading, setIsCustomersLoading] = useState<boolean>(false)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
-  const [nextId, setNextId] = useState(3)
+
+  const fetchAllCustomers = async () => {
+    try {
+      setIsCustomersLoading(true)
+      const result = await getAllCustomers()
+      setCustomers(result)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.message)
+      } else {
+        toast.error("Something went wrong")
+      }
+    } finally {
+      setIsCustomersLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchAllCustomers()
+  }, [])
+
+  const removeCustomer = async (id: number) => {
+    await deleteCustomer(id)
+  }
+
 
   const handleAddCustomer = () => {
     setSelectedCustomer(null)
@@ -30,33 +56,54 @@ const CustomersPage: React.FC = () => {
     setIsDeleteDialogOpen(true)
   }
 
-  const handleFormSubmit = (customerData: Omit<Customer, "id">) => {
+  const handleFormSubmit = async (customerData: Omit<Customer, "id">) => {
     if (selectedCustomer) {
-      // Update existing customer
-      setCustomers((prev) =>
-        prev.map((customer) =>
-          customer.id === selectedCustomer.id ? { ...customerData, id: selectedCustomer.id } : customer
+      try {
+        const updatedCustomer = await updateCustomer(selectedCustomer.id, customerData)
+        setCustomers((prev) =>
+          prev.map((customer) => (customer.id === selectedCustomer.id ? updatedCustomer : customer))
         )
-      )
-      setIsEditDialogOpen(false)
-      console.log("Customer updated:", { ...customerData, id: selectedCustomer.id })
+        setIsEditDialogOpen(false)
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.message)
+        } else {
+          toast.error("Something went wrong")
+        }
+      }
     } else {
       // Add new customer
-      const newCustomer = { ...customerData, id: nextId }
-      setCustomers((prev) => [...prev, newCustomer])
-      setNextId((prev) => prev + 1)
-      setIsAddDialogOpen(false)
-      console.log("Customer added:", newCustomer)
+      try {
+        const newCustomer = await addCustomer(customerData)
+        setCustomers((prev) => [...prev, newCustomer])
+        // you can also call getAllCustomers here
+        setIsAddDialogOpen(false)
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.message)
+        } else {
+          toast.error("Something went wrong")
+        }
+      }
     }
     setSelectedCustomer(null)
   }
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedCustomer) {
-      setCustomers((prev) => prev.filter((customer) => customer.id !== selectedCustomer.id))
-      console.log("Customer deleted:", selectedCustomer)
-      setIsDeleteDialogOpen(false)
-      setSelectedCustomer(null)
+      try {
+        await removeCustomer(selectedCustomer.id)
+        fetchAllCustomers()
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.message)
+        } else {
+          toast.error("Something went wrong")
+        }
+      } finally {
+        setIsDeleteDialogOpen(false)
+        setSelectedCustomer(null)
+      }
     }
   }
 
@@ -65,6 +112,10 @@ const CustomersPage: React.FC = () => {
     setIsEditDialogOpen(false)
     setIsDeleteDialogOpen(false)
     setSelectedCustomer(null)
+  }
+
+  if (isCustomersLoading) {
+    return <div>Loading...</div>
   }
 
   return (
