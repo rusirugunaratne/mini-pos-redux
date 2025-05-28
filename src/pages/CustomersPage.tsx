@@ -4,10 +4,13 @@ import Dialog from "../components/Dialog"
 import type { Customer } from "../types/Customer"
 import CustomersTable from "../components/tables/CustomersTable"
 import CustomerForm from "../components/forms/CustomerForm"
-import { customersData } from "../data/data"
+import { useDispatch, useSelector } from "react-redux"
+import type { RootState } from "../state/store"
+import { addCustomer, deleteCustomer, updateCustomer } from "../state/slices/customersSlice"
 
 const CustomersPage: React.FC = () => {
-  const [customers, setCustomers] = useState<Customer[]>(customersData)
+  const dispatch = useDispatch()
+  const customers = useSelector((state: RootState) => state.customers.customers)
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -31,28 +34,22 @@ const CustomersPage: React.FC = () => {
 
   const handleFormSubmit = (customerData: Omit<Customer, "id">) => {
     if (selectedCustomer) {
-      // Update existing customer
-      setCustomers((prev) =>
-        prev.map((customer) =>
-          customer.id === selectedCustomer.id ? { ...customerData, id: selectedCustomer.id } : customer
-        )
-      )
+      const updatedCustomer = {
+        ...customerData,
+        id: selectedCustomer.id,
+      }
+      dispatch(updateCustomer(updatedCustomer))
       setIsEditDialogOpen(false)
-      console.log("Customer updated:", { ...customerData, id: selectedCustomer.id })
     } else {
-      // Add new customer
-      const newCustomer = { ...customerData, id: Date.now() }
-      setCustomers((prev) => [...prev, newCustomer])
+      dispatch(addCustomer(customerData))
       setIsAddDialogOpen(false)
-      console.log("Customer added:", newCustomer)
     }
     setSelectedCustomer(null)
   }
 
   const confirmDelete = () => {
     if (selectedCustomer) {
-      setCustomers((prev) => prev.filter((customer) => customer.id !== selectedCustomer.id))
-      console.log("Customer deleted:", selectedCustomer)
+      dispatch(deleteCustomer(selectedCustomer.id))
       setIsDeleteDialogOpen(false)
       setSelectedCustomer(null)
     }

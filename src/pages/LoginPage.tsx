@@ -1,10 +1,8 @@
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
-
-interface FormData {
-  email: string
-  password: string
-}
+import { Link, useNavigate } from "react-router-dom"
+import type { LoginFormData } from "../types/Login"
+import { useDispatch } from "react-redux"
+import { login } from "../state/slices/authSlice"
 
 interface FormErrors {
   email?: string
@@ -12,11 +10,13 @@ interface FormErrors {
 }
 
 const Login = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const dispatch = useDispatch()
+  const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
   })
   const [errors, setErrors] = useState<FormErrors>({})
+  const navigate = useNavigate()
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -42,7 +42,11 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      console.log("Login Details:", formData)
+      if (formData.email === "admin@gmail.com" && formData.password === "admin123") {
+        dispatch(login())
+        navigate("/dashboard")
+        console.log("Login Details:", formData)
+      }
     }
   }
 

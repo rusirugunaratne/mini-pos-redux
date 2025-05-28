@@ -1,8 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
+import { useSelector } from "react-redux"
+import type { RootState } from "../state/store"
 
 const AdminRoutes = () => {
-  const isLoggedIn = true
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isAuthenticated)
 
   if (!isLoggedIn) return <Navigate to='/login' />
 
