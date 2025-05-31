@@ -1,5 +1,7 @@
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { Link, useNavigate } from "react-router-dom"
+import { login } from "../store/slices/authSlice"
 
 interface FormData {
   email: string
@@ -17,6 +19,8 @@ const Login = () => {
     password: "",
   })
   const [errors, setErrors] = useState<FormErrors>({})
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -43,6 +47,8 @@ const Login = () => {
     e.preventDefault()
     if (validateForm()) {
       console.log("Login Details:", formData)
+      dispatch(login())
+      navigate("/dashboard")
     }
   }
 
