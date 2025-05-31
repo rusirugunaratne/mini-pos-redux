@@ -1,10 +1,13 @@
 import { Navigate, Outlet } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
+import { useSelector } from "react-redux"
+import type { RootState } from "../store/store"
 
 const AdminRoutes = () => {
-  const isLoggedIn = true
+  const isAuthenticated 
+  = useSelector((state: RootState) => state.auth.isAuthenticated)
 
-  if (!isLoggedIn) return <Navigate to='/login' />
+  if (!isAuthenticated) return <Navigate to='/login' />
 
   return (
     <div className='flex h-screen overflow-hidden'>

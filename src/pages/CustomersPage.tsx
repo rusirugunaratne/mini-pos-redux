@@ -4,10 +4,13 @@ import Dialog from "../components/Dialog"
 import type { Customer } from "../types/Customer"
 import CustomersTable from "../components/tables/CustomersTable"
 import CustomerForm from "../components/forms/CustomerForm"
-import { customersData } from "../data/data"
+import type { RootState } from "../store/store"
+import { useDispatch, useSelector } from "react-redux"
+import { addCustomer, deleteCustomer, updateCustomer } from "../store/slices/customersSlice"
 
 const CustomersPage: React.FC = () => {
-  const [customers, setCustomers] = useState<Customer[]>(customersData)
+  const customers = useSelector((state: RootState) => state.customers.customers)
+  const dispatch = useDispatch()
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -32,17 +35,14 @@ const CustomersPage: React.FC = () => {
   const handleFormSubmit = (customerData: Omit<Customer, "id">) => {
     if (selectedCustomer) {
       // Update existing customer
-      setCustomers((prev) =>
-        prev.map((customer) =>
-          customer.id === selectedCustomer.id ? { ...customerData, id: selectedCustomer.id } : customer
-        )
-      )
+      const editingCustomer = { ...customerData, id: selectedCustomer.id }
+      dispatch(updateCustomer(editingCustomer))
       setIsEditDialogOpen(false)
       console.log("Customer updated:", { ...customerData, id: selectedCustomer.id })
     } else {
       // Add new customer
       const newCustomer = { ...customerData, id: Date.now() }
-      setCustomers((prev) => [...prev, newCustomer])
+      dispatch(addCustomer(newCustomer))
       setIsAddDialogOpen(false)
       console.log("Customer added:", newCustomer)
     }
@@ -51,7 +51,7 @@ const CustomersPage: React.FC = () => {
 
   const confirmDelete = () => {
     if (selectedCustomer) {
-      setCustomers((prev) => prev.filter((customer) => customer.id !== selectedCustomer.id))
+      dispatch(deleteCustomer(selectedCustomer.id))
       console.log("Customer deleted:", selectedCustomer)
       setIsDeleteDialogOpen(false)
       setSelectedCustomer(null)
