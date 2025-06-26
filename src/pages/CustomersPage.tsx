@@ -36,7 +36,7 @@ const CustomersPage: React.FC = () => {
     fetchAllCustomers()
   }, [])
 
-  const removeCustomer = async (id: number) => {
+  const removeCustomer = async (id: string) => {
     await deleteCustomer(id)
   }
 
@@ -56,12 +56,12 @@ const CustomersPage: React.FC = () => {
     setIsDeleteDialogOpen(true)
   }
 
-  const handleFormSubmit = async (customerData: Omit<Customer, "id">) => {
+  const handleFormSubmit = async (customerData: Omit<Customer, "_id">) => {
     if (selectedCustomer) {
       try {
-        const updatedCustomer = await updateCustomer(selectedCustomer.id, customerData)
+        const updatedCustomer = await updateCustomer(selectedCustomer._id, customerData)
         setCustomers((prev) =>
-          prev.map((customer) => (customer.id === selectedCustomer.id ? updatedCustomer : customer))
+          prev.map((customer) => (customer._id === selectedCustomer._id ? updatedCustomer : customer))
         )
         setIsEditDialogOpen(false)
       } catch (error) {
@@ -92,7 +92,7 @@ const CustomersPage: React.FC = () => {
   const confirmDelete = async () => {
     if (selectedCustomer) {
       try {
-        await removeCustomer(selectedCustomer.id)
+        await removeCustomer(selectedCustomer._id)
         fetchAllCustomers()
       } catch (error) {
         if (axios.isAxiosError(error)) {

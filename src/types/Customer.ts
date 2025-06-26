@@ -1,5 +1,5 @@
 export type Customer = {
-  id: number
+  _id: string
   name: string
   email: string
   phone: string

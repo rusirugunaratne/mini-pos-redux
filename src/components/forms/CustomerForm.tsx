@@ -3,7 +3,7 @@ import type { Customer, CustomerFormData } from "../../types/Customer"
 
 interface CustomerFormProps {
   customer?: Customer | null
-  onSubmit: (customerData: Omit<Customer, "id">) => void
+  onSubmit: (customerData: Omit<Customer, "_id">) => void
 }
 
 interface FormErrors {

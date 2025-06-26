@@ -6,16 +6,16 @@ export const getAllCustomers = async (): Promise<Customer[]> => {
   return response.data
 }
 
-export const deleteCustomer = async (id: number): Promise<void> => {
-  await apiClient.delete(`/customers/${id}`)
+export const deleteCustomer = async (_id: string): Promise<void> => {
+  await apiClient.delete(`/customers/${_id}`)
 }
 
-export const addCustomer = async (customerData: Omit<Customer, "id">): Promise<Customer> => {
+export const addCustomer = async (customerData: Omit<Customer, "_id">): Promise<Customer> => {
   const response = await apiClient.post("/customers", customerData)
   return response.data
 }
 
-export const updateCustomer = async (id: number, customerData: Omit<Customer, "id">) => {
-  const response = await apiClient.put(`/customers/${id}`, customerData)
+export const updateCustomer = async (_id: string, customerData: Omit<Customer, "_id">) => {
+  const response = await apiClient.put(`/customers/${_id}`, customerData)
   return response.data
 }
