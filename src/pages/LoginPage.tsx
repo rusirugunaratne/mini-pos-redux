@@ -1,5 +1,8 @@
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { login } from "../services/authService"
+import toast from "react-hot-toast"
+import axios from "axios"
 
 interface FormData {
   email: string
@@ -17,6 +20,8 @@ const Login = () => {
     password: "",
   })
   const [errors, setErrors] = useState<FormErrors>({})
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -39,10 +44,23 @@ const Login = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      console.log("Login Details:", formData)
+      setIsLoading(true)
+      try {
+        const user = await login(formData)
+        toast.success(`Welcome, ${user.name}!`)
+        navigate("/dashboard") // <-- or wherever you want to go after login
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.message)
+        } else {
+          toast.error("Something went wrong")
+        }
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -107,10 +125,11 @@ const Login = () => {
 
           <div>
             <button
+              disabled={isLoading}
               type='submit'
               className='group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out'
             >
-              Sign in
+              {!isLoading ? "Sign in" : "Signing in..."}
             </button>
           </div>
 

@@ -1,18 +1,34 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { logout } from "../services/authService"
+import toast from "react-hot-toast"
+import axios from "axios"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleLogin = () => {
     console.log("Login")
     navigate("/login")
   }
 
-  const handleLogout = () => {
-    console.log("Logout")
-    navigate("/")
+  const handleLogout = async () => {
+    setIsLoading(true)
+    try {
+      await logout()
+      toast.success("Logout successful!")
+      navigate("/login") // <-- navigate to login on success
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.message)
+      } else {
+        toast.error("Something went wrong")
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleDashboard = () => {
@@ -84,10 +100,11 @@ const Navbar = () => {
               </button>
 
               <button
+                disabled={isLoading}
                 onClick={handleLogout}
                 className='block w-full text-left bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-base font-medium'
               >
-                Logout
+                {isLoading ? "Logging out..." : "Logout"}
               </button>
 
               <button
