@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { login } from "../services/authService"
 import toast from "react-hot-toast"
 import axios from "axios"
+import { useAuth } from "../context/useAuth"
 
 interface FormData {
   email: string
@@ -22,6 +23,7 @@ const Login = () => {
   const [errors, setErrors] = useState<FormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const { login: authenticate } = useAuth()
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -51,6 +53,7 @@ const Login = () => {
       try {
         const user = await login(formData)
         toast.success(`Welcome, ${user.name}!`)
+        authenticate()
         navigate("/dashboard") // <-- or wherever you want to go after login
       } catch (error) {
         if (axios.isAxiosError(error)) {
