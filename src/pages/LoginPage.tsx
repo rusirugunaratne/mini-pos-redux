@@ -53,7 +53,7 @@ const Login = () => {
       try {
         const user = await login(formData)
         toast.success(`Welcome, ${user.name}!`)
-        authenticate()
+        authenticate(user.accessToken)
         navigate("/dashboard") // <-- or wherever you want to go after login
       } catch (error) {
         if (axios.isAxiosError(error)) {
